@@ -1,0 +1,216 @@
+{
+    "type": "array",
+    "title000": "Rules",
+    "format": "tabs",
+    "items": {
+        "title": "Rule",
+        "type": "object",
+        "id": "rule",
+        "properties": {
+            "id": {
+                "title": "ID",
+                "type": "string",
+                "readonly000": true
+            },                
+            "name": {
+                "title": "Name",
+                "type": "string",
+                "minLength": 2,
+                "default": "Rule",
+                "propertyOrder": 1
+            },
+            "event": {
+                "title": "Subscribe to event of type",
+                "type": "string",
+                "propertyOrder": 2
+            },
+            "ruleSettings": {
+                "type": "object",
+                "title": "Settings",
+                "properties": {
+                    "s3securityKey": {
+                        "title": "S3 security key:",
+                        "type": "string"
+                    },
+                    "s3accessKey": {
+                        "title": "S3 access key:",
+                        "type": "string"
+                    },
+                    "s3region": {
+                        "title": "S3 region:",
+                        "type": "string"
+                    },
+                    "s3bucketName": {
+                        "title": "S3 bucket name:",
+                        "type": "string"
+                    },
+                    "s3Path": {
+                        "title": "S3 path:",
+                        "type": "string"
+                    },
+                    "storage": {
+                        "title": "Storage:",
+                        "type": "string",
+                        "enum": ["ftp", "sftp"]
+                    },
+                    "ftpHost": {
+                        "title": "FTP Host:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "ftpPort": {
+                        "title": "FTP Port:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "ftpUser": {
+                        "title": "FTP User:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "ftpPwd": {
+                        "title": "FTP Password:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "ftpPath": {
+                        "title": "FTP Path:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "ftpActiveExternalIPAddress": {
+                        "title": "FTP Active External IP Address:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "ftpActiveMode": {
+                        "title": "FTP Active Mode:",
+                        "type": "boolean",
+                        "dependencies": "storage"
+                    },
+                    "ftpActiveModePortRangeMin": {
+                        "title": "FTP Active Mode Port Range Min:",
+                        "type": "integer",
+                        "dependencies": "storage"
+                    },
+                    "ftpActiveModePortRangeMax": {
+                        "title": "FTP ActiveModePortRange Max:",
+                        "type": "integer",
+                        "dependencies": "storage"
+                    }, 
+                    "sftpHost": {
+                        "title": "SFTP Host:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "sftpPort": {
+                        "title": "SFTP Port:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "sftpUser": {
+                        "title": "SFTP User:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "sftpPwd": {
+                        "title": "SFTP Password:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "sftpPath": {
+                        "title": "SFTP Path:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "sftpSsh": {
+                        "title": "SFTP SSH:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "sftpEncryption": {
+                        "title": "SFTP Encryption:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "sftpComment": {
+                        "title": "SFTP Comment:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "sftpPublicKey": {
+                        "title": "SFTP Public Key:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "sftpPrivateKey": {
+                        "title": "SFTP Private Key:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },
+                    "sftpPrivateMac": {
+                        "title": "SFTP Private Mac:",
+                        "type": "string",
+                        "dependencies": "storage"
+                    },                    
+                    "delimeter": {
+                        "title": "Delimeter:",
+                        "type": "string"
+                    }
+                },
+                "propertyOrder": 3
+            },
+            "fieldSets": {
+                "type": "array",
+                "title": "Fieldsets",
+                "format": "table",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "setName": {
+                            "type": "string",
+                            "title": "Name"                       
+                        },
+                        "fields": {
+                            "type": "array",
+                            "title": "Fields",
+                            "format": "table",  
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "fieldName": {
+                                        "type": "string",
+                                        "title": "Name",
+                                        "propertyOrder": 1
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "title": "Type",
+                                        "enum": [
+                                            "profileAttribute",
+                                            "sessionValue",
+                                            "eventValue",
+                                            "macro",
+                                            "meta",
+                                            "static"
+                                        ],
+                                        "default": "static",
+                                        "propertyOrder": 2
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "title": "Value",
+                                        "propertyOrder": 3
+                                    }
+                                },
+                                "required": ["fieldName", "type"]
+                            }
+                        }
+                    }
+                },
+                "propertyOrder": 4
+            }
+        },
+        "required": ["name", "event"]
+    }  
+}

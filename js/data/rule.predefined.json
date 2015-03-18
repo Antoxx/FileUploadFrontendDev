@@ -1,0 +1,20 @@
+{
+    "id": null,
+    "ruleSettings": {},
+    "fieldSets": [{
+        "setName": "mapping",
+        "fields": [{
+            "fieldSettings": null,
+            "valueRef": null,
+            "value": null,
+            "fieldName": "id"
+        }, {
+            "fieldSettings": null,
+            "valueRef": null,
+            "value": null,
+            "fieldName": "email"
+        }]
+    }], 
+    "event": "",
+    "name": ""
+}
