@@ -314,9 +314,11 @@
             this.options.optionLabels = mapping[1];
             //this.refresh();
             
+            //this.destroy();
+            
             console.log(typeField);
             debugger;
-            this.parent.createItem(this.propertyId, this.schema, this.options, null, typeField.propertyId, function (callback) {
+            this.parent.addItem(this.propertyId, this.schema, this.options, null, typeField.id, function (callback) {
                 if (callback instanceof Function) {
                     callback();
                 }
