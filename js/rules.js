@@ -32,15 +32,16 @@
 
     // Init IframeHelper
     var inno = new IframeHelper();    
-    
+    var rules;
     var onReady = function () {
         inno.onReady(function () {
-            inno.getRules(function (success, rules) {
+            inno.getRules(function (success, els) {
                 if (!success) {
                     alert('Rules were not loaded due to error. Please reload screen.');
                     return;
                 }
 
+                rules = els;
                 inno.getProfileSchemaAttributes(function (els) {
                     mappingTypeValues.profileAttribute = prepareEls(els);
 
@@ -51,49 +52,7 @@
                         mappingTypeValues.event = newEls;
 
                         eventSchema.enum = newEls[0];
-                        if (!eventSchema.options) {
-                            eventSchema.options = {};
-                        }
-                        eventSchema.options.enum_titles = newEls[1];
-
-//                        /**
-//                         * JSON Schema -> HTML Editor
-//                         * https://github.com/jdorn/json-editor/
-//                         */
-//                        editor = new JSONEditor($('#form-setting')[0], {
-//                            disable_collapse: true,
-//                            disable_edit_json: true,
-//                            disable_properties: true,
-//                            disable_array_reorder: true,
-//                            no_additional_properties: true,
-//                            schema: schema,
-//                            //startval: predefinedFields,
-//                            required: [],
-//                            required_by_default: true,
-//                            theme: 'bootstrap3'
-//                        });
-//                        editor.on('change', function () {
-//                            var eventRegexp = /^root\.\d+\.event$/;
-//                            var mappingTypeRegexp = /^root\.\d+\.fieldSets\.\d+\.fields\.\d+\.type$/;
-//                            var editors = editor.editors;
-//                            var path;
-//                            for (path in editors) {
-//                                if (eventRegexp.test(path)) {
-//                                    changeEvent(path);
-//                                }
-//
-//                                if (mappingTypeRegexp.test(path)) {
-//                                    changeMappingTypeAndValue(path);
-//                                }
-//                            }
-//
-//                            completeRule();
-//                            fixPredefinedFields();
-//                        });
-//
-//                        completeRule(rules);
-//                        fixPredefinedFields();
-
+                        
                         editor = $('#form-setting').alpaca({
                             schema: schema,
                             options: {
@@ -103,6 +62,8 @@
                                             disabled: true
                                         },
                                         event: {
+                                            type: 'select',
+                                            optionLabels: newEls[1],
                                             noneLabel: "-- Select --"
                                         },
                                         ruleSettings: {
@@ -213,7 +174,7 @@
                                             }
                                         },
                                         fieldSets: {
-                                            type: 'table',
+                                            //type: 'table',
                                             items: {
                                                 fields: {
                                                     fields: {
@@ -229,108 +190,30 @@
                                                                         "Meta",
                                                                         "Static"
                                                                     ],
-                                                                    onFieldChange: function (event) {
-                                                                        //debugger;
-                                                                    }
+                                                                    removeDefaultNone: true
                                                                 }
                                                             },
-                                                            postRender: function (callback) {
-                                                                if (!(arguments[0] instanceof Function)) {
-                                                                    return;
-                                                                }
-
-                                                                callback();
-                                                                
-                                                                if (isPredefinedField(this.path)) {
-                                                                    this.childrenByPropertyId.fieldName.disable();
-                                                                    $(this.containerItemEl).find(".alpaca-array-actionbar").hide();
-                                                                    debugger;
-                                                                }
-                                                            }
-                                                        },
-                                                        postRender: function (callback) {
-                                                            if (!(arguments[0] instanceof Function)) {
-                                                                return;
-                                                            }
-                                                            
-                                                            callback();
+                                                            postRender: fieldPostRender
                                                         }
                                                     }
                                                 },
-                                                postRender: function (callback) {
-                                                    //debugger;
-                                                    if (!(arguments[0] instanceof Function)) {
-                                                        return;
-                                                    }                                                                
-                                                    callback();
-                                                }
-                                            },
-                                            postRender: function (callback) {
-                                                //debugger;
-                                                if (!(arguments[0] instanceof Function)) {
-                                                    return;
-                                                }                                                                
-                                                callback();
+                                                postRender: fieldsetPostRender
                                             }
                                         }
                                     },
-                                    postRender: function () {
-                                        // it will be "callback" or "control"
-                                        if (!(arguments[0] instanceof Function)) {
-                                            return;
-                                        }
-                                        
-                                        var value = this.getValue();
-                                        var newValue = $.extend(true, {}, predefinedFields, {
-                                            id: randomId()
-                                        }, value);
-
-                                        this.setValue(newValue); 
-                                        
-                                        arguments[0]();
-                                    }
+                                    postRender: rulePostRender
                                 },
-                                postRender: function (callback) {
-                                    var newRules = [];
-                                    rules.forEach(function (rule) {
-                                        newRules.push(
-                                            $.extend(true, {}, predefinedFields, rule)
-                                        );
-                                    });
-
-                                    this.setValue(newRules);
-                                    
-                                    callback();
-                                },
-                                "toolbar0": {
+                                postRender: mainPostRender,
+                                toolbar: {
                                     "showLabels": true,
                                     "actions": [{
                                         "label": "I addeth thee",
                                         "action": "add"
                                     }]
-                                },
-                                "actionbar": {
-                                    "showLabels": true,
-                                    "actions": [{
-                                        "action": "add",
-                                        "click": function(key, action, itemIndex) {
-                                                debugger;
-                                        }
-                                    }, {
-                                        "label": "Begone ye' item",
-                                        "action": "remove"
-                                    }]
                                 }
                             },
-                            postRender: function (control) {
-                                debugger;
-//                                control.childrenByPropertyId["title"].on("change", function() {
-//                                    alert("The value of title was changed to: " + this.getValue());
-//                                });
-                            },
                             view: {
-                                parent: "bootstrap-edit-horizontal",
-                                //displayReadonly: true
+                                parent: "bootstrap-edit-horizontal"
                             }
                         });
 
@@ -356,201 +239,151 @@
         event: []
     };
     
-    var changeEvent = function (path) {
-        var eventField = editor.getEditor(path);
-        if (!eventField) {
-            return;
-        }
-        
-        var newValue = eventField.getValue();
-        var parts, appId, sectionId, eventId;
-        
-        if (!newValue || eventField.oldValue === newValue) {
-            return;
-        }
-        
-        parts = newValue.split('/');
-        appId = parts[0];
-        sectionId = parts[1];
-        eventId = parts[2];
-
-        inno.getProfileSchemaSessionDatas(appId, sectionId, function (els) {
-            mappingTypeValues.sessionValue = prepareEls(els);
-        });        
-
-        inno.getProfileSchemaEventDefinitionDatas(appId, sectionId, eventId, function (els) {
-            mappingTypeValues.eventValue = prepareEls(els);
+    function mainPostRender (callback) {
+        // load existing rules
+        var newRules = [];
+        rules.forEach(function (rule) {
+            newRules.push(
+                $.extend(true, {}, predefinedFields, rule)
+            );
         });
-        
-        eventField.oldValue = newValue;
-    };
-    var changeMappingTypeAndValue = function (path) {
-        var typeField, newValue;
-        typeField = editor.getEditor(path);
-        if (!typeField) {
-            return;
-        }
-        
-        newValue = typeField.getValue();
-        if (!typeField.oldValue) {
-            typeField.oldValue = newValue;
-        }
-        
-        var valuePath = typeField.parent.path + '.value';
-        var valueField = editor.getEditor(valuePath);
-        var oldEnumValues = '' + (valueField.schema.enum || valueField.schema.enum_options);
-        var newEnumValues = mappingTypeValues[newValue] || '';
-        
-        // if type was not changed and select options are the same GO OUT
-        if (typeField.oldValue === newValue && (oldEnumValues === '' + newEnumValues || oldEnumValues === '' + newEnumValues[0])) {
+
+        this.setValue(newRules);
+
+        callback();
+    }
+    
+    function rulePostRender (callback) {
+        // it will be "callback" or "control"
+        if (!(callback instanceof Function)) {
             return;
         }
 
-        changeEnumValues(valuePath, newEnumValues);
-        typeField.oldValue = newValue;
-    };
-    var changeEnumValues = function (path, enumValues) {
-        var oldField = editor.getEditor(path);
-        var oldValue = oldField.getValue();
-        var fieldName = oldField.key;
-        var parent = oldField.parent;
-        var nextFieldCnt = oldField.container.nextSibling;
-        
-        oldField.destroy();
-        
-        delete parent.editors[fieldName];
-        delete parent.cached_editors[fieldName];
-        
-        var fieldSchema = parent.schema.properties[fieldName];
-        if (enumValues) {
-            fieldSchema.enum = enumValues[0] || enumValues;
-            if (!fieldSchema.options) {
-                fieldSchema.options = {};
+        // fix new rule with predefined fields
+        var value = this.getValue();
+        var newValue = $.extend(true, {}, predefinedFields, {
+            id: randomId()
+        }, value);
+
+        this.setValue(newValue); 
+
+        callback();
+    }  
+    
+    function fieldsetPostRender (callback) {
+        if (!(callback instanceof Function)) {
+            return;
+        }
+
+        callback();
+
+        // disable "name" field and actions
+        if (isPredefinedField(this.path)) {
+            this.childrenByPropertyId.setName.disable();     
+        }
+    }
+    
+    function fieldPostRender (callback) {
+        if (!(callback instanceof Function)) {
+            return;
+        }
+
+        callback();
+
+        var me = this;
+
+        // disable "name" field and actions
+        if (isPredefinedField(this.path)) {
+            this.childrenByPropertyId.fieldName.disable();
+
+            setTimeout(function () {
+                $(me.containerItemEl).find(".alpaca-array-actionbar").hide();
+            }, 300);
+        }
+
+        var typeField = this.childrenByPropertyId["type"];
+        var valueField = this.childrenByPropertyId["value"];
+        valueField.subscribe(typeField, function(val) {
+            var mapping = mappingTypeValues[val] || [];
+            if (!mapping.length) {
+                return;
             }
             
-            fieldSchema.options.enum_titles = enumValues[1];
-        } else {
-            delete fieldSchema.enum;
-        }
-        
-        // layout the new editor
-        if (parent.options.table_row) {
-            var newFieldCls = parent.jsoneditor.getEditorClass(fieldSchema);
-            var newField = parent.editors[fieldName] = parent.jsoneditor.createEditor(newFieldCls, {
-                jsoneditor: parent.jsoneditor,
-                schema: fieldSchema,
-                path: parent.path + '.' + fieldName,
-                parent: parent,
-                compact: true,
-                required: true
+            this.schema.enum = mapping[0];
+            this.options.type = 'select';
+            this.options.optionLabels = mapping[1];
+            //this.refresh();
+            
+            console.log(typeField);
+            debugger;
+            this.parent.createItem(this.propertyId, this.schema, this.options, null, typeField.propertyId, function (callback) {
+                if (callback instanceof Function) {
+                    callback();
+                }
             });
-            newField.preBuild();
-
-            var holder = parent.theme.getTableCell();
-            parent.editor_holder.insertBefore(holder, nextFieldCnt);
-            newField.setContainer(holder);
-            newField.build();
-            newField.postBuild();
-        } else {
-            parent.addObjectProperty(fieldName);
-        }
-        
-        var newField = editor.getEditor(path);
-        var newValue = '';
-        if (enumValues) {
-            newValue = enumValues.indexOf(oldValue) === -1 ? '' : oldValue;
-        }
-        
-        newField.setValue(newValue);
-    };
-    var prepareEls = function (els) {
+        });                                                                
+    }
+    
+//    var changeEvent = function (path) {
+//        var eventField = editor.getEditor(path);
+//        if (!eventField) {
+//            return;
+//        }
+//        
+//        var newValue = eventField.getValue();
+//        var parts, appId, sectionId, eventId;
+//        
+//        if (!newValue || eventField.oldValue === newValue) {
+//            return;
+//        }
+//        
+//        parts = newValue.split('/');
+//        appId = parts[0];
+//        sectionId = parts[1];
+//        eventId = parts[2];
+//
+//        inno.getProfileSchemaSessionDatas(appId, sectionId, function (els) {
+//            mappingTypeValues.sessionValue = prepareEls(els);
+//        });        
+//
+//        inno.getProfileSchemaEventDefinitionDatas(appId, sectionId, eventId, function (els) {
+//            mappingTypeValues.eventValue = prepareEls(els);
+//        });
+//        
+//        eventField.oldValue = newValue;
+//    };
+    
+    function prepareEls (els) {
         var newEls = [[], []];
         els.forEach(function (el) {
             newEls[0].push(el);
             newEls[1].push(el.split('/').join(' / '));
         });
         return newEls;
-    };
-    var randomId = function () {
-        return +new Date;
-//        return Math.floor((1 + Math.random()) * 0x10000000)
-//            .toString(16)
-//            .substring(1);
-    };
+    }
     
-    var getPredefinedFieldsPaths = function () {
+    function randomId () {
+        return +new Date;
+    }
+    
+    function getPredefinedFieldsPaths () {
         var res = [];
         predefinedFields.fieldSets.forEach(function (fs, fsIdx) {
+            var fsPath = 'fieldSets[' + fsIdx + ']';
+            res.push(fsPath);
             fs.fields.forEach(function (f, fIdx) {
-                var path = ['fieldSets[' + fsIdx + ']', 'fields[' + fIdx + ']'].join('/');
+                var path = [fsPath, 'fields[' + fIdx + ']'].join('/');
                 res.push(path);
             });
         });
         return res;
-    };
+    }
     
-    var isPredefinedField = function (path) {
+    function isPredefinedField (path) {
         return predefinedFieldsPaths.some(function (fp) {
             return path.indexOf(fp) !== -1;
         });
-    };
-    
-    /**
-     * Complete new rule with default values
-     */
-    var completeRule = function (rules) {
-        rules = rules || editor.getValue();
-        var newRules = [];
-        if (!editor.savedValue || editor.savedValue.length < rules.length) {
-            rules.forEach(function (rule) {
-                if (!rule.id) {
-                    rule.id = randomId();
-                }
-        
-                newRules.push(
-                    $.extend(true, {}, predefinedFields, rule)
-                );
-            });
-
-            editor.setValue(newRules);
-        }
-        
-        editor.savedValue = newRules.length ? newRules : rules;
-        
-        // empty row cache
-        if (!rules.length) {
-            editor.getEditor('root').empty(true);
-        }
-    };
-    /**
-     * Fix predefined fields
-     */
-    var fixPredefinedFields = function () {
-        var rules = editor.getValue();
-        
-        // remove controls from predefined fields
-        rules.forEach(function (rule, ruleIdx) {
-            predefinedFields.fieldSets.forEach(function (fs, fsIdx) {
-                var fieldPath = ['root', ruleIdx, 'fieldSets', fsIdx, 'fields'].join('.');
-                var field = editor.getEditor(fieldPath);
-                if (field) {
-                    field.delete_last_row_button.style.display = 'none';
-                    field.remove_all_rows_button.style.display = 'none';
-                }
-
-                fs.fields.forEach(function (f, fIdx) {
-                    var fieldPath = ['root', ruleIdx, 'fieldSets', fsIdx, 'fields', fIdx].join('.');
-                    var field = editor.getEditor(fieldPath);
-                    if (field) {
-                        field.delete_button.style.display = 'none';
-                    }
-                    
-                    // readonly for predefined fields names
-                    field.editors.fieldName.input.readOnly = true;
-                });
-            });
-        });
-    };
+    }
 
     // Listen submit button click event
     $('#submit-setting').on('click', function () {

@@ -9,8 +9,7 @@
         "properties": {
             "id": {
                 "title": "ID",
-                "type": "string",
-                "readonly000": true
+                "type": "string"
             },                
             "name": {
                 "title": "Name",
