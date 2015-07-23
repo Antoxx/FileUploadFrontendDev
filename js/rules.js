@@ -29,6 +29,11 @@
     // Init loader
     var loader = new Loader();
     loader.show();
+    
+var newTemplate = ' \
+<script type="text/x-handlebars-template"> \
+    <input class="wow" type="text" id="" placeholder="" size="" readonly="readonly" name="" data-=""/> \
+</script>';    
 
     // Init IframeHelper
     var inno = new IframeHelper();    
@@ -213,7 +218,18 @@
                                 }
                             },
                             view: {
-                                parent: "bootstrap-edit-horizontal"
+                                parent: "bootstrap-edit-horizontal",
+                                "layout": {
+                                    //"template": "<div class='row'></div>"
+                                },
+                                "templates": {
+                                    "control-text": newTemplate
+                                },
+                                "callbacks": {
+                                    "container": function () {
+                                        debugger;
+                                    }
+                                }
                             }
                         });
 
@@ -297,7 +313,7 @@
             this.childrenByPropertyId.fieldName.disable();
 
             setTimeout(function () {
-                $(me.containerItemEl).find(".alpaca-array-actionbar").hide();
+                //$(me.containerItemEl).find(".alpaca-array-actionbar").hide();
             }, 300);
         }
 
@@ -312,12 +328,12 @@
             this.schema.enum = mapping[0];
             this.options.type = 'select';
             this.options.optionLabels = mapping[1];
-            //this.refresh();
+//            this.refresh();
             
             //this.destroy();
             
-            console.log(typeField);
-            debugger;
+//            console.log(typeField);
+//            debugger;
             this.parent.addItem(this.propertyId, this.schema, this.options, null, typeField.id, function (callback) {
                 if (callback instanceof Function) {
                     callback();
